@@ -1,0 +1,570 @@
+{
+  "name": "Nexus Cloud - Triage Inteligente B2B y Propuestas",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.message.chat.first_name }}",
+              "operation": "notContains",
+              "value2": "=botmaker"
+            },
+            {
+              "value1": "={{ $json.message.text }}",
+              "operation": "contains",
+              "value2": "Hola"
+            }
+          ]
+        }
+      },
+      "id": "da3afa3a-ca8f-4bb3-bf0f-f9b6a9443da7",
+      "name": "2. Filtro Anti-Loop",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": {},
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "f6d56132-1e75-402a-b3a3-d74af30e1ac4",
+      "name": "5. ¿Ocurrió Error en IA?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $node['Base de mensajes'].json.fields.Email }}",
+        "subject": "=Propuesta Técnica y Comercial - Nexus Cloud",
+        "message": "={{ JSON.parse($node['4. OpenAI AI Engine'].json.message.content).propuesta_html }}",
+        "options": {}
+      },
+      "id": "e2d19b0f-a555-4299-8286-817fe4209a1b",
+      "name": "9. Gmail: Enviar Propuesta",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        336,
+        176
+      ],
+      "webhookId": "6f85eda2-235e-42c7-a489-d902c4e9bde7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uBms5YdeNWCEVpP9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "hola soy el asistente virtual de Seba_tarifa de servicios y solo puedo responder en base la info que tengo en mi base ",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "Hola soy el asistente virtual de Seba_tarifa de servicios y solo puedo responder en base la info que tengo en mi base solamente\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -656,
+        -80
+      ],
+      "id": "9aad6046-7c60-417e-b0dd-330c676d0ce1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -1360,
+        64
+      ],
+      "id": "1ffc9b85-9c5d-4128-b4c2-852a2b143752",
+      "name": "Telegram Trigger",
+      "webhookId": "eae8a784-d6a2-4a77-a5a3-44667c5ba382",
+      "credentials": {
+        "telegramApi": {
+          "id": "FrEM563yrOqPnuDw",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1pyHrUwuGfF0JCa6Ttxk3udzfP7CMJGmFuH4laC69kMg",
+          "mode": "list",
+          "cachedResultName": "Trabajao_final_IA_Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pyHrUwuGfF0JCa6Ttxk3udzfP7CMJGmFuH4laC69kMg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pyHrUwuGfF0JCa6Ttxk3udzfP7CMJGmFuH4laC69kMg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "TIMESTAMP": "={{ $('Telegram Trigger').item.json.message.date }}",
+            "ID": "={{ $json.message.from.id }}",
+            "MENSAJE ": "={{ $json.message.text }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "TIMESTAMP",
+              "displayName": "TIMESTAMP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MENSAJE ",
+              "displayName": "MENSAJE ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RESPUESTA ",
+              "displayName": "RESPUESTA ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ESTADO ",
+              "displayName": "ESTADO ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -912,
+        240
+      ],
+      "id": "cc2bf3df-0ff6-45b5-b4eb-32b7f494b912",
+      "name": "Repositorio de mensajes desde Botmaker",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iEjVCJQkdIHyauQa",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxTokens": -1,
+          "responseFormat": "text",
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        112
+      ],
+      "id": "b2ae2340-2e1a-4db0-a625-ae71024e6128",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "JuwrdMDrZW0awH3a",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "resource": "base",
+        "returnAll": false,
+        "options": {
+          "permissionLevel": []
+        }
+      },
+      "id": "93a08b42-646f-40af-8834-a4dc933173f8",
+      "name": "Base de mensajes",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        -240
+      ],
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "DoHsC2DffczyNymy",
+          "name": "Airtable account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1pyHrUwuGfF0JCa6Ttxk3udzfP7CMJGmFuH4laC69kMg",
+          "mode": "list",
+          "cachedResultName": "Trabajao_final_IA_Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pyHrUwuGfF0JCa6Ttxk3udzfP7CMJGmFuH4laC69kMg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 196554882,
+          "mode": "list",
+          "cachedResultName": "Mensajes OK ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pyHrUwuGfF0JCa6Ttxk3udzfP7CMJGmFuH4laC69kMg/edit#gid=196554882"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "TIMESTAMP",
+              "displayName": "TIMESTAMP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MENSAJE_CONSULTA ",
+              "displayName": "MENSAJE_CONSULTA ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RESPUESTA ",
+              "displayName": "RESPUESTA ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ESTADO ",
+              "displayName": "ESTADO ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "update_id",
+              "displayName": "update_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -896,
+        -32
+      ],
+      "id": "54739542-f79b-49da-9551-1a284f013a5e",
+      "name": "Mensajes OK",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iEjVCJQkdIHyauQa",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {}
+      },
+      "id": "ed2f2bff-ab8f-49d8-bb21-979494a89717",
+      "name": "Esperar aprobacion",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        32,
+        176
+      ],
+      "webhookId": "c94b1b26-a73a-439c-984d-5682f0509d7d"
+    },
+    {
+      "parameters": {
+        "message": "=The agent wants to run this tool: {$json.message.text{{ $json.message.from.first_name }}\n\nInput:\n{{ $tool.parameters }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.telegramHitlTool",
+      "typeVersion": 1.2,
+      "position": [
+        -576,
+        144
+      ],
+      "id": "c4c320f8-583b-477a-bb1e-6b2519be2465",
+      "name": "Telegram",
+      "webhookId": "4235142b-5e02-4f17-b7c5-0baa317a2712",
+      "credentials": {
+        "telegramApi": {
+          "id": "FrEM563yrOqPnuDw",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $node['Base de mensajes'].json.fields.Email }}",
+        "subject": "=Propuesta Técnica y Comercial - Nexus Cloud",
+        "message": "={{ JSON.parse($node['4. OpenAI AI Engine'].json.message.content).propuesta_html }}",
+        "options": {}
+      },
+      "id": "263beb95-6b3b-4844-a586-0fa5c80cd262",
+      "name": "Envia un mail a la casilla del referente",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        -128
+      ],
+      "webhookId": "6f85eda2-235e-42c7-a489-d902c4e9bde7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uBms5YdeNWCEVpP9",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "2. Filtro Anti-Loop": {
+      "main": [
+        [
+          {
+            "node": "Base de mensajes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mensajes OK",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Repositorio de mensajes desde Botmaker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. ¿Ocurrió Error en IA?": {
+      "main": [
+        [
+          {
+            "node": "Envia un mail a la casilla del referente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Esperar aprobacion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "5. ¿Ocurrió Error en IA?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "2. Filtro Anti-Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Base de mensajes": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensajes OK": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar aprobacion": {
+      "main": [
+        [
+          {
+            "node": "9. Gmail: Enviar Propuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "faeb9c86-65df-4b99-9a55-c9bda717e86a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a965ab1fef3ff611dff9ef8d8ddc4d2c3d8aac77f9f4fc3af96e972edb48cfc4"
+  },
+  "nodeGroups": [],
+  "id": "4Dex1a2zZ4zkKg2C",
+  "tags": []
+}
